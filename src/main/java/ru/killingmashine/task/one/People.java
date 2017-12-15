@@ -21,4 +21,9 @@ public class People {
     public Departament getDepartament() {
         return departament;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s;%d;%s", name,salary,departament.getDepartamentName());
+    }
 }

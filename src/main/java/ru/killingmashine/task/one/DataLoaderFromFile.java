@@ -4,9 +4,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataLoaderFromFile implements Data {
-    public DataLoaderFromFile(String fileName){
-     file = new File(fileName);
+public class DataLoaderFromFile implements DataLoader {
+    private String fileName;
+
+    public DataLoaderFromFile(String filename) {
+        this.fileName = filename;
     }
 
      private File file;
@@ -18,6 +20,7 @@ public class DataLoaderFromFile implements Data {
 
     public List<People> getData() {
         try {
+            file = new File(fileName);
             fileReader= new FileReader(file);
             bufferedReader=new BufferedReader(fileReader);
             String line;
@@ -35,12 +38,11 @@ public class DataLoaderFromFile implements Data {
         } catch (IOException e) {
             System.out.println("Read file: " + file.getName() + "- message:" + e.getMessage());
         }
-
+        try {
+            bufferedReader.close();
+        } catch (IOException e) {
+            System.out.println("Ошибка закрытия bufferedReader: " + e.getMessage());
+        }
         return peopleList;
     }
-
-    public void writeData() {
-
-    }
-
 }

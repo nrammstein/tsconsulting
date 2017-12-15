@@ -9,4 +9,7 @@ public class Departament {
     public String getDepartamentName(){
         return departamentName;
     }
+    public void setDepartamentName(String departamentName) {
+        this.departamentName = departamentName;
+    }
 }

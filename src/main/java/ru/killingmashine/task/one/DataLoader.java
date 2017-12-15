@@ -2,8 +2,7 @@ package ru.killingmashine.task.one;
 
 import java.util.List;
 
-public interface Data {
+public interface DataLoader {
     List<People> getData();
-    void writeData();
-
 }
+
