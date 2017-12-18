@@ -1,8 +1,8 @@
 package ru.killingmashine.task.one;
 
-import java.util.List;
+import java.util.Set;
 
 public interface DataLoader {
-    List<People> getData();
+    Set<Departament> getData();
 }
 

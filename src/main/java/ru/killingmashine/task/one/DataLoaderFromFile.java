@@ -1,8 +1,8 @@
 package ru.killingmashine.task.one;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 public class DataLoaderFromFile implements DataLoader {
     private String fileName;
@@ -14,11 +14,10 @@ public class DataLoaderFromFile implements DataLoader {
      private File file;
      private FileReader fileReader;
      private BufferedReader bufferedReader;
-     private People people;
-     private Departament peopleDepartament;
-     private List peopleList = new ArrayList<People>();
+     private Departament departament;
+     private Set<Departament> departamentList = new HashSet<Departament>();
 
-    public List<People> getData() {
+    public Set<Departament> getData() {
         try {
             file = new File(fileName);
             fileReader= new FileReader(file);
@@ -26,12 +25,31 @@ public class DataLoaderFromFile implements DataLoader {
             String line;
             String [] masPeople;
             while((line=bufferedReader.readLine()) != null){
+                boolean flagDepartamentInSet=false;
                 masPeople = line.split(";");
-                peopleDepartament=new Departament(masPeople[0]);
-                String peopleName = masPeople[1];
-                int peopleSalary = Integer.parseInt(masPeople[2]);
-                people=new People(peopleName,peopleSalary,peopleDepartament);
-                peopleList.add(people);
+                String departamentNameInFile = masPeople[0];
+                String peopleNameInFile = masPeople[1];
+                BigDecimal peopleSalaryInFile = new BigDecimal(masPeople[2]);
+                if (departamentList.isEmpty()){
+                    departament=new Departament(departamentNameInFile);
+                    departament.addNewPeopleInDepartament(new People(peopleNameInFile,peopleSalaryInFile));
+                    departamentList.add(departament);
+                    continue;
+                }
+                Iterator<Departament> iterator = departamentList.iterator();
+                while (iterator.hasNext()){
+                    departament=iterator.next();
+                    String departamentName=departament.getDepartamentName();
+                    if (departamentName.equals(departamentNameInFile)){
+                        departament.addNewPeopleInDepartament(new People(peopleNameInFile,peopleSalaryInFile));
+                        flagDepartamentInSet=true;
+                    }
+                }
+                if(!flagDepartamentInSet){
+                    departament=new Departament(departamentNameInFile);
+                    departament.addNewPeopleInDepartament(new People(peopleNameInFile,peopleSalaryInFile));
+                    departamentList.add(departament);
+                }
             }
         } catch (FileNotFoundException e) {
             System.out.println("Create file: " + file.getName()+ "- message: " + e.getMessage());
@@ -43,6 +61,6 @@ public class DataLoaderFromFile implements DataLoader {
         } catch (IOException e) {
             System.out.println("Ошибка закрытия bufferedReader: " + e.getMessage());
         }
-        return peopleList;
+        return departamentList;
     }
 }

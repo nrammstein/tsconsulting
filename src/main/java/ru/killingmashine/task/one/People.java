@@ -1,29 +1,26 @@
 package ru.killingmashine.task.one;
 
+import java.math.BigDecimal;
+
 public class People {
     private String name;
-    private int salary;
-    private Departament departament;
+    private BigDecimal salary;
 
-    public People(String name, int salary, Departament departament){
+    public People(String name, BigDecimal salary){
         this.name=name;
         this.salary=salary;
-        this.departament=departament;
     }
+
     public String getName(){
         return name;
     }
 
-    public int getSalary(){
+    public BigDecimal getSalary(){
         return salary;
-    }
-
-    public Departament getDepartament() {
-        return departament;
     }
 
     @Override
     public String toString() {
-        return String.format("%s;%d;%s", name,salary,departament.getDepartamentName());
+        return String.format("%s;%s", name,salary);
     }
 }
