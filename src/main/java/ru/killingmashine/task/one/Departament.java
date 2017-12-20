@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Departament {
     private String departamentName;
-    private List<People> peopleList = new ArrayList<People>();
+    private List<People> peopleList =null;
 
     public Departament(String departamentName)
     {
@@ -15,11 +15,15 @@ public class Departament {
     public String getDepartamentName(){
         return departamentName;
     }
+
     public void addNewPeopleInDepartament(People people){
-        peopleList.add(people);
+        getPeopleInDepartament().add(people);
     }
 
     public List<People> getPeopleInDepartament(){
+        if (peopleList == null) {
+            peopleList=new ArrayList<People>();
+        }
         return peopleList;
     }
 

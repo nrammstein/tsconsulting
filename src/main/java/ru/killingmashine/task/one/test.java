@@ -1,9 +1,14 @@
 package ru.killingmashine.task.one;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class test {
+    List<String> list=new ArrayList<String>();
+            ;
     public static void main(String[] args) throws IOException {
-        System.out.println(0.1+0.2);
+        test t = new test();
+        System.out.println(t.list==null);
     }
 }

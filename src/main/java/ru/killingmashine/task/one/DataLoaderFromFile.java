@@ -6,20 +6,17 @@ import java.util.*;
 
 public class DataLoaderFromFile implements DataLoader {
     private String fileName;
-
     public DataLoaderFromFile(String filename) {
         this.fileName = filename;
     }
 
-     private File file;
-     private FileReader fileReader;
-     private BufferedReader bufferedReader;
-     private Departament departament;
-     private Set<Departament> departamentList = new HashSet<Departament>();
-
     public Set<Departament> getData() {
+        File file = new File(fileName);
+        FileReader fileReader;
+        BufferedReader bufferedReader=null;
+        Departament departament;
+        Set<Departament> departamentList = new HashSet<Departament>();
         try {
-            file = new File(fileName);
             fileReader= new FileReader(file);
             bufferedReader=new BufferedReader(fileReader);
             String line;

@@ -1,115 +1,77 @@
 package ru.killingmashine.task.one;
 
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
 public class PeopleHandler {
     private Set<Departament> departamentSet;
-    private List<People> peopleList;
-    private HashMap<String, BigDecimal> avgDepartamentsSalaryMap = new HashMap<String, BigDecimal>();
-    private List<String> listForWritter =new ArrayList<String>();
-    private Departament departament;
-    private List<String> departamentSetAsList =new ArrayList<String>();
-    private People people;
 
     public PeopleHandler(Set<Departament> departamentSet)
     {
         this.departamentSet=departamentSet;
     }
 
-    private void printMap(HashMap<String,BigDecimal> hashMap){
-        Iterator<Map.Entry<String, BigDecimal>> iterator = hashMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, BigDecimal> pair = iterator.next();
-            System.out.println("ƒепартамент: " + pair.getKey() + " - —редн€€ зп: " + pair.getValue());
-            listForWritter.add("ƒепартамент: " + pair.getKey() + " - —редн€€ зп: " + pair.getValue());
-        }
-        System.out.println();
-    }
-
-    private void viewDepartamentSetAsStringList(){
+    public void printVariablesChangePeopleInDepartament(){
         Iterator<Departament> iterator = departamentSet.iterator();
-        departamentSetAsList.clear();
+//        цикл по департаментам
         while (iterator.hasNext()){
-            departament=iterator.next();
-            peopleList=departament.getPeopleInDepartament();
+            Departament departament = iterator.next();
+            List<People> peopleList = departament.getPeopleInDepartament();
+            BigDecimal sumSalaryInDepartament = new BigDecimal(0);
+            BigDecimal avgSalaryInDepartament;
+//            цикл по люд€м в конкретном департаменте, считаем среднюю зп
+            for (int i = 0; i <peopleList.size() ; i++) {
+                People people = peopleList.get(i);
+                sumSalaryInDepartament=sumSalaryInDepartament.add(people.getSalary());
+            }
+            avgSalaryInDepartament=sumSalaryInDepartament.divide(new BigDecimal(peopleList.size()),2,RoundingMode.HALF_EVEN);
+
+//            рассматриваем возможности перевода людей из этого департамента
+//            провер€ем будет ли средн€€ зп отдела больше при переводе сотрудника
+//            еще раз цикл по сотрудникам
+
             for (int i = 0; i < peopleList.size(); i++) {
-                people=peopleList.get(i);
-                departamentSetAsList.add(departament.getDepartamentName()+";"+people.getName()+";"+people.getSalary());
-            }
-        }
-    }
-
-    private void calculationAvgSalaryInDepartament(List<String> listDepartamentsAndPeople){
-        String departamentName;
-        Set<String> departamentsNamesInSetList= new HashSet<String>();
-        for (int i = 0; i < listDepartamentsAndPeople.size(); i++) {
-            departamentsNamesInSetList.add(listDepartamentsAndPeople.get(i).split(";")[0]);
-        }
-        Iterator<String> iterator = departamentsNamesInSetList.iterator();
-        while (iterator.hasNext()) {
-            departamentName=iterator.next();
-            BigDecimal sumSalaryDepartament=new BigDecimal(0);
-            BigDecimal avgSalaryDepartament= new BigDecimal(0);
-            int countPeopleInDepertament=0;
-            for (int j = 0; j < listDepartamentsAndPeople.size(); j++) {
-                if (departamentName.equals(listDepartamentsAndPeople.get(j).split(";")[0])){
-                    sumSalaryDepartament=sumSalaryDepartament.add(new BigDecimal(listDepartamentsAndPeople.get(j).split(";")[2]));
-                    countPeopleInDepertament++;
-                }
-            }
-            avgSalaryDepartament=sumSalaryDepartament.divide(new BigDecimal(countPeopleInDepertament),2,RoundingMode.HALF_EVEN);
-            avgDepartamentsSalaryMap.put(departamentName,avgSalaryDepartament);
-        }
-    }
-
-    public List<String> changePeopleInDepartament(){
-        if (departamentSetAsList.isEmpty()) viewDepartamentSetAsStringList();
-        for (String s :
-                departamentSetAsList) {
-            System.out.println(s);
-            listForWritter.add(s);
-        }
-        calculationAvgSalaryInDepartament(departamentSetAsList);
-        System.out.println();
-        printMap(avgDepartamentsSalaryMap);
-
-        Set<String> departamentsNamesInSetList= new HashSet<String>();
-        for (int i = 0; i < departamentSetAsList.size(); i++) {
-            departamentsNamesInSetList.add(departamentSetAsList.get(i).split(";")[0]);
-        }
-        System.out.println("\n¬арианты перевода: \n");
-        listForWritter.add("¬арианты перевода: ");
-        for (int i = 0; i < departamentSetAsList.size(); i++) {
-            Iterator<String> iterator = departamentsNamesInSetList.iterator();
-            String oldDepName=departamentSetAsList.get(i).split(";")[0];
-            while (iterator.hasNext()) {
-                String newDepName=iterator.next();
-                if(!oldDepName.equals(newDepName)){
-                    BigDecimal oldSalaryDepartamentBeforeChange = avgDepartamentsSalaryMap.get(oldDepName);
-                    BigDecimal newSalaryDepartamentBeforeChange = avgDepartamentsSalaryMap.get(newDepName);
-                    departamentSetAsList.set(i,departamentSetAsList.get(i).replaceFirst(oldDepName,newDepName));
-                    calculationAvgSalaryInDepartament(departamentSetAsList);
-                    BigDecimal oldSalaryDepartamentAfterChange = avgDepartamentsSalaryMap.get(oldDepName);
-                    BigDecimal newSalaryDepartamentAfterChange = avgDepartamentsSalaryMap.get(newDepName);
-
-                    if((oldSalaryDepartamentBeforeChange.compareTo(oldSalaryDepartamentAfterChange))==-1 && (newSalaryDepartamentBeforeChange.compareTo(newSalaryDepartamentAfterChange))==-1){
-                        System.out.printf("ѕереводим сотрудника %s, из отдела %s, в отдел %s. %n —редн€€ зп отдела до перевода: %s. %n —редн€€ зп отдела после перевода: %s%n " +
-                                "»зменение зп отдела куда перевели сотрудника, до перевода: %s, после перевода: %s%n%n ",
-                                departamentSetAsList.get(i).split(";")[1],oldDepName,newDepName,oldSalaryDepartamentBeforeChange,
-                                oldSalaryDepartamentAfterChange,newSalaryDepartamentBeforeChange,newSalaryDepartamentAfterChange);
-                        listForWritter.add(String.format("ѕереводим сотрудника %s, из отдела %s, в отдел %s. %n —редн€€ зп отдела до перевода: %s. %n —редн€€ зп отдела после перевода: %s%n " +
-                                        "»зменение зп отдела куда перевели сотрудника, до перевода: %s, после перевода: %s%n%n ",
-                                departamentSetAsList.get(i).split(";")[1],oldDepName,newDepName,oldSalaryDepartamentBeforeChange,
-                                oldSalaryDepartamentAfterChange,newSalaryDepartamentBeforeChange,newSalaryDepartamentAfterChange));
+                People people = peopleList.get(i);
+                BigDecimal sumSalaryInDepartamentNew=new BigDecimal(0);
+                BigDecimal avgSalaryInDepartamentNew;
+                sumSalaryInDepartamentNew=sumSalaryInDepartament.subtract(people.getSalary());
+                avgSalaryInDepartamentNew=sumSalaryInDepartamentNew.divide(new BigDecimal(peopleList.size()-1),2,RoundingMode.HALF_EVEN);
+                if ((avgSalaryInDepartament.compareTo(avgSalaryInDepartamentNew)) == -1){
+//                    если мы тут, значит перевод сотрудника увеличил среднюю зп в отделе, дальше ищем куда его можно перевести
+                    Iterator<Departament> iteratorSecond = departamentSet.iterator();
+//                    присматриваем новый отдел дл€ нашего сотрудника
+                    while (iteratorSecond.hasNext()){
+                        Departament departamentSecond = iteratorSecond.next();
+//                        провер€ем чтобы департамент был другой
+                        if (!departament.getDepartamentName().equals(departamentSecond.getDepartamentName())){
+//                            суда попадаем если имена отделов не совпадают, дальше считаем среднюю зп отдела куда переводим
+                            List<People> listPeopleSecond = departamentSecond.getPeopleInDepartament();
+                            BigDecimal sumSalaryInNewDepartament=new BigDecimal(0);
+                            BigDecimal avgSalaryInNewDepartament;
+                            for (int j = 0; j < listPeopleSecond.size(); j++) {
+                                People peopleSecond = listPeopleSecond.get(j);
+                                sumSalaryInNewDepartament=sumSalaryInNewDepartament.add(peopleSecond.getSalary());
+                            }
+                            avgSalaryInNewDepartament=sumSalaryInNewDepartament.divide(new BigDecimal(listPeopleSecond.size()),2,RoundingMode.HALF_EVEN);
+//                            тут высчитываем среднюю зп нового отдела после предпологаемого перевода сотрудника
+                            BigDecimal sumSalaryInNewDepartamentSecond = sumSalaryInNewDepartament.add(people.getSalary());
+                            BigDecimal avgSalaryInNewDepartamentSecond = sumSalaryInNewDepartamentSecond.divide(new BigDecimal(listPeopleSecond.size()+1),2,RoundingMode.HALF_EVEN);
+//                            сравниваем среднюю зп после перевода
+                            if ((avgSalaryInNewDepartament.compareTo(avgSalaryInNewDepartamentSecond))==-1){
+//                                если мы тут, перевод сотрудника в этот отдел нас удовлетвор€ет
+                                System.out.printf("¬озможен перевод сотрудника %s из отдела - %s в отдел - %s%n  —редн€€ зп старого отдела до перевода - %s%n" +
+                                        "—редн€€ зп старого отдела после перевода - %s%n—редн€€ зп нового отдела до перевода - %s%n—редн€€ зп нового отдела после перевода - %s%n%n",
+                                        people.getName(),departament.getDepartamentName(),departamentSecond.getDepartamentName(),avgSalaryInDepartament,avgSalaryInDepartamentNew,
+                                        avgSalaryInNewDepartament,avgSalaryInNewDepartamentSecond);
+                            }
+                        }
                     }
-                    departamentSetAsList.set(i,departamentSetAsList.get(i).replaceFirst(newDepName,oldDepName));
-                    calculationAvgSalaryInDepartament(departamentSetAsList);
                 }
             }
         }
-    return listForWritter;
+
+
     }
+
 }
